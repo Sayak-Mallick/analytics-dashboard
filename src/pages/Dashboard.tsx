@@ -93,6 +93,13 @@ const Dashboard = () => {
   return (
     <>
       <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          activeItem={activeMenuItem}
+          onItemClick={handleMenuItemClick}
+          onSearchSelect={handleSearchSelect}
+        />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         </div>
