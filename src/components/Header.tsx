@@ -1,16 +1,29 @@
-import { Calendar, ChevronDown, Bell, User, Menu, Search } from 'lucide-react';
+import { ChevronDown, Bell, User, Menu, Search } from 'lucide-react';
+import { CalendarIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
+import { setDateRange } from '../store/filterSlice';
+import { type RootState } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface HeaderProps {
   onMenuToggle: () => void;
 }
 
 const Header = ({ onMenuToggle }: HeaderProps) => {
+  const dispatch = useDispatch();
+  const { dateRange } = useSelector((state: RootState) => state.filters);
+
+  const handleDateRangeChange = (label: string, days: number) => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - days);
+    dispatch(setDateRange({start,end,label }));
+  };
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="bg-white shadow-sm border-b border-gray-200 px-6 py-4"
+      className="bg-white shadow-sm border-b mb-8 border-gray-200 px-6 py-4"
     >
       <div className="flex items-center justify-between">
         {/* Left side - Logo and Navigation */}
@@ -21,12 +34,9 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
           >
             <Menu className="h-5 w-5 text-gray-600" />
           </button>
-          
+
           <div className="flex items-center space-x-6">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-3">
-                <div className="w-3 h-3 bg-white rounded-full"></div>
-              </div>
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">Overview dashboard</h1>
                 <p className="text-sm text-gray-500">A consolidated view of your app efficiency by storefronts and key metrics.</p>
@@ -47,10 +57,23 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
           </div>
 
           {/* Date Range */}
-          <div className="hidden md:flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2">
-            <Calendar className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">Last 7 Days</span>
-            <span className="text-sm text-gray-500">Jul 5 - Jul 11, 2025</span>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 px-4 py-2 border border-gray-200 rounded-lg bg-white">
+              <CalendarIcon className="w-4 h-4 text-gray-500" />
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{dateRange.label}</div>
+                <div className="text-sm font-medium text-black">
+                  {dateRange.start.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                  })} - {dateRange.end.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Action Buttons */}

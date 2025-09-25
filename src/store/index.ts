@@ -1,17 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import dashboardReducer from './dashboardSlice';
+import metricsReducer from './metricSlice';
+import filtersReducer from './filterSlice';
 
 export const store = configureStore({
   reducer: {
-    dashboard: dashboardReducer,
+    metrics: metricsReducer,
+    filters: filtersReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['dashboard/updateFilters'],
-        ignoredPaths: ['dashboard.filters.dateRange.start', 'dashboard.filters.dateRange.end'],
-      },
-    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
