@@ -4,7 +4,7 @@ A modern, interactive analytics dashboard built with React, TypeScript, and Vite
 
 ## 🚀 Demo
 
-[View Live Demo](https://analytics-dashboard-demo.vercel.app)
+[View Live Demo](https://analytics-dashboard-n5y5.vercel.app/)
 
 ## Features
 
