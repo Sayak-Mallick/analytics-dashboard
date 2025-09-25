@@ -1,10 +1,55 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
-import { type RootState } from '../store';
+import { useAnalyticsData } from '../hooks/useAnalyticsData';
 
 const SummaryCards: React.FC = () => {
-  const { totalSummary } = useSelector((state: RootState) => state.metrics);
+  const { analytics } = useAnalyticsData();
+
+  // Calculate dynamic summary metrics based on filtered data
+  const totalSummary = [
+    {
+      label: 'Total Spend',
+      value: `$${analytics.totalSpend.toLocaleString()}`,
+      percentage: '+15.7%',
+      change: 15.7
+    },
+    {
+      label: 'Total Revenue',
+      value: `$${analytics.totalRevenue.toLocaleString()}`,
+      percentage: '+22.4%',
+      change: 22.4
+    },
+    {
+      label: 'Total Conversions',
+      value: analytics.totalConversions.toLocaleString(),
+      percentage: '+8.9%',
+      change: 8.9
+    },
+    {
+      label: 'ROAS',
+      value: `${analytics.roas.toFixed(1)}x`,
+      percentage: '+12.3%',
+      change: 12.3
+    },
+    {
+      label: 'Total Installs',
+      value: analytics.totalInstalls.toLocaleString(),
+      percentage: '+18.5%',
+      change: 18.5
+    },
+    {
+      label: 'Cost per Install',
+      value: `$${analytics.avgCPI.toFixed(2)}`,
+      percentage: '-5.2%',
+      change: -5.2
+    },
+    {
+      label: 'Conversion Rate',
+      value: `${analytics.conversionRate.toFixed(2)}%`,
+      percentage: '+3.1%',
+      change: 3.1
+    }
+  ];
 
   const getChangeColor = (change: number) => {
     if (change > 0) return 'text-green-500';

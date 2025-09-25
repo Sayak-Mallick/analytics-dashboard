@@ -1,14 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
 import { MapPin, Globe } from 'lucide-react';
-import { type RootState } from '../store';
+import { useAnalyticsData } from '../hooks/useAnalyticsData';
 
 const StorefrontsMap: React.FC = () => {
-  const { storefronts } = useSelector((state: RootState) => state.metrics);
+  const { storefronts } = useAnalyticsData(); // Use filtered data from analytics hook
   const totalSpend = storefronts.reduce((sum, item) => sum + item.spend, 0);
-
-  const maxSpend = Math.max(...storefronts.map(s => s.spend));
 
   return (
     <motion.div
@@ -129,35 +126,6 @@ const StorefrontsMap: React.FC = () => {
             <span>Spend Amount</span>
           </div>
         </div>
-      </div>
-      
-      {/* Regional Data Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {storefronts.map((region, index) => (
-          <motion.div
-            key={region.region}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.5 + index * 0.1 }}
-            className="bg-gray-50 rounded-lg p-3 text-center"
-          >
-            <div className="text-xs font-medium text-gray-700 mb-1">
-              {region.region}
-            </div>
-            <div className="text-sm font-semibold text-gray-900">
-              ${region.spend.toLocaleString()}
-            </div>
-            <div className="mt-2">
-              <div
-                className="h-1 bg-orange-500 rounded-full"
-                style={{
-                  width: `${(region.spend / maxSpend) * 100}%`,
-                  minWidth: '2px'
-                }}
-              />
-            </div>
-          </motion.div>
-        ))}
       </div>
     </motion.div>
   );

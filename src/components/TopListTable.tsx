@@ -4,10 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import type { RootState } from '../store';
 import { setSelectedTab, setSortBy, setSortOrder } from '../store/filterSlice';
+import { useAnalyticsData } from '../hooks/useAnalyticsData';
 
 const TopListTable: React.FC = () => {
   const dispatch = useDispatch();
-  const { topList } = useSelector((state: RootState) => state.metrics);
+  const { topList } = useAnalyticsData(); // Use filtered data from analytics hook
   const { selectedTab, sortBy, sortOrder } = useSelector((state: RootState) => state.filters);
   
   const [currentPage, setCurrentPage] = useState(1);

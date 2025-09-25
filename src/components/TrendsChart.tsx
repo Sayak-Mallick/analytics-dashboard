@@ -1,17 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
-import type { RootState } from '../store';
+import { useAnalyticsData } from '../hooks/useAnalyticsData';
 
 const TrendsChart: React.FC = () => {
-  const { trends } = useSelector((state: RootState) => state.metrics);
-  const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('30d');
+  const { trends } = useAnalyticsData(); // Now uses filtered trends from the date range selector
+  const [localDateRange, setLocalDateRange] = useState<'7d' | '30d' | '90d'>('30d');
 
   const filteredTrends = useMemo(() => {
-    const days = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : 90;
+    // Apply additional local filtering on top of the globally filtered trends
+    const days = localDateRange === '7d' ? 7 : localDateRange === '30d' ? 30 : 90;
     return trends.slice(-days);
-  }, [trends, dateRange]);
+  }, [trends, localDateRange]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -49,9 +49,9 @@ const TrendsChart: React.FC = () => {
             {(['7d', '30d', '90d'] as const).map((range) => (
               <button
                 key={range}
-                onClick={() => setDateRange(range)}
+                onClick={() => setLocalDateRange(range)}
                 className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                  dateRange === range
+                  localDateRange === range
                     ? 'bg-orange-100 text-orange-600'
                     : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                 }`}

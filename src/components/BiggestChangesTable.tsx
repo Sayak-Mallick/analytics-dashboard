@@ -4,10 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import type { RootState } from '../store';
 import { setSelectedTab } from '../store/filterSlice';
+import { useAnalyticsData } from '../hooks/useAnalyticsData';
 
 const BiggestChangesTable: React.FC = () => {
   const dispatch = useDispatch();
-  const { biggestChanges } = useSelector((state: RootState) => state.metrics);
+  const { biggestChanges } = useAnalyticsData(); // Use filtered data from analytics hook
   const { selectedTab } = useSelector((state: RootState) => state.filters);
   
   // Sorting state

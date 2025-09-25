@@ -1,24 +1,12 @@
 import { ChevronDown, Bell, User, Menu, Search } from 'lucide-react';
-import { CalendarIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
-import { setDateRange } from '../store/filterSlice';
-import { type RootState } from '../store';
-import { useDispatch, useSelector } from 'react-redux';
+import DateRangeSelector from './DateRangeSelector';
 
 interface HeaderProps {
   onMenuToggle: () => void;
 }
 
 const Header = ({ onMenuToggle }: HeaderProps) => {
-  const dispatch = useDispatch();
-  const { dateRange } = useSelector((state: RootState) => state.filters);
-
-  const handleDateRangeChange = (label: string, days: number) => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - days);
-    dispatch(setDateRange({start,end,label }));
-  };
   return (
     <motion.header
       initial={{ y: -50, opacity: 0 }}
@@ -58,22 +46,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
 
           {/* Date Range */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 px-4 py-2 border border-gray-200 rounded-lg bg-white">
-              <CalendarIcon className="w-4 h-4 text-gray-500" />
-              <div className="text-right">
-                <div className="text-xs text-gray-500">{dateRange.label}</div>
-                <div className="text-sm font-medium text-black">
-                  {dateRange.start.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric'
-                  })} - {dateRange.end.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}
-                </div>
-              </div>
-            </div>
+            <DateRangeSelector />
           </div>
 
           {/* Action Buttons */}

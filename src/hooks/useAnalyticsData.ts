@@ -8,13 +8,36 @@ export const useAnalyticsData = () => {
   const { topList, biggestChanges, trends, storefronts, totalSummary } = useSelector(
     (state: RootState) => state.metrics
   );
+  
+  const { dateRange } = useSelector((state: RootState) => state.filters);
+
+  // Filter trends data based on selected date range
+  const filteredTrends = useMemo(() => {
+    const startDate = dateRange.start.toISOString().split('T')[0];
+    const endDate = dateRange.end.toISOString().split('T')[0];
+    
+    return trends.filter(trend => 
+      trend.date >= startDate && trend.date <= endDate
+    );
+  }, [trends, dateRange]);
+
+  // Calculate storefronts data based on filtered campaigns (within date range)
+  const filteredStorefronts = useMemo(() => {
+    // For storefronts, we'll scale the spend based on the date range selected
+    const scaleFactor = filteredTrends.length / Math.max(trends.length, 1);
+    
+    return storefronts.map(storefront => ({
+      ...storefront,
+      spend: Math.round(storefront.spend * scaleFactor * 100) / 100
+    }));
+  }, [storefronts, filteredTrends.length, trends.length]);
 
   // Analytics calculations
   const analytics = useMemo(() => {
     const totalSpend = topList.reduce((sum, campaign) => sum + campaign.spend, 0);
     const totalInstalls = topList.reduce((sum, campaign) => sum + campaign.installs, 0);
     const totalConversions = topList.reduce((sum, campaign) => sum + campaign.conversions, 0);
-    const totalRevenue = trends.reduce((sum, day) => sum + day.revenue, 0);
+    const totalRevenue = filteredTrends.reduce((sum, day) => sum + day.revenue, 0);
 
     const avgCPI = totalSpend / totalInstalls;
     const conversionRate = (totalConversions / totalInstalls) * 100;
@@ -29,7 +52,7 @@ export const useAnalyticsData = () => {
       conversionRate,
       roas,
     };
-  }, [topList, trends]);
+  }, [topList, filteredTrends]);
 
   // Top performers by different metrics
   const topPerformers = useMemo(() => {
@@ -83,10 +106,10 @@ export const useAnalyticsData = () => {
 
   // Trend analysis
   const trendAnalysis = useMemo(() => {
-    if (trends.length < 2) return null;
+    if (filteredTrends.length < 2) return null;
 
-    const recent = trends.slice(-7); // Last 7 days
-    const previous = trends.slice(-14, -7); // Previous 7 days
+    const recent = filteredTrends.slice(-7); // Last 7 days
+    const previous = filteredTrends.slice(-14, -7); // Previous 7 days
 
     const recentAvg = {
       spend: recent.reduce((sum, day) => sum + day.spend, 0) / recent.length,
@@ -105,7 +128,7 @@ export const useAnalyticsData = () => {
       revenueTrend: ((recentAvg.revenue - previousAvg.revenue) / previousAvg.revenue) * 100,
       conversionTrend: ((recentAvg.conversions - previousAvg.conversions) / previousAvg.conversions) * 100,
     };
-  }, [trends]);
+  }, [filteredTrends]);
 
   // Filter functions
   const filterCampaignsByRegion = (region: string): CampaignData[] => {
@@ -126,8 +149,8 @@ export const useAnalyticsData = () => {
     // Raw data
     topList,
     biggestChanges,
-    trends,
-    storefronts,
+    trends: filteredTrends, // Use filtered trends based on date range
+    storefronts: filteredStorefronts, // Use filtered storefronts based on date range
     totalSummary,
     
     // Computed analytics
