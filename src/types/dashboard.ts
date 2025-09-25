@@ -13,6 +13,7 @@ export interface CampaignData {
   name: string;
   country: string;
   type: 'Discovery' | 'Competitor' | 'Today tab' | 'Branding';
+  performance?: number;
   status: 'active' | 'paused';
   spend: number;
   installs: number;

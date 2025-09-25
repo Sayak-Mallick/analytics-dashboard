@@ -185,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           width: isCollapsed ? 80 : 256
         }}
         transition={{ type: 'tween', duration: 0.3 }}
-        className={`fixed left-0 top-0 z-30 h-full bg-orange-500 text-white shadow-lg lg:relative lg:translate-x-0 lg:shadow-none lg:block ${
+        className={`fixed left-0 top-0 z-30 h-full bg-orange-500 text-orange-400 shadow-lg lg:relative lg:translate-x-0 lg:shadow-none lg:block ${
           isOpen ? 'block' : 'hidden lg:block'
         } ${isCollapsed ? 'w-20' : 'w-64'}`}
       >
@@ -196,7 +196,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
             </div>
             {!isCollapsed && (
-              <span className="text-lg font-semibold">Apple Search Ads</span>
+              <span className="text-lg font-semibold text-white">Apple Search Ads</span>
             )}
           </div>
 
@@ -227,12 +227,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
-                  className="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg pl-10 pr-10 py-2.5 text-white placeholder-orange-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-30 focus:border-transparent transition-all"
+                  className="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg pl-10 pr-10 py-2.5 text-orange-400 placeholder-orange-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-30 focus:border-transparent transition-all"
                 />
                 {searchQuery && (
                   <button
                     onClick={clearSearch}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-200 hover:text-white transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-200 hover:text-orange-400 transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -315,15 +315,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                     isCollapsed ? 'justify-center px-2 py-3' : 'space-x-3 px-4 py-3'
                   } rounded-lg transition-all duration-200 ${
                     isActive 
-                      ? 'bg-white bg-opacity-20 text-white' 
-                      : 'text-orange-600 hover:bg-white hover:bg-opacity-10 hover:text-white'
+                      ? 'bg-white bg-opacity-20 text-orange-400' 
+                      : 'text-orange-600 hover:bg-white hover:bg-opacity-10 hover:text-orange-400'
                   } group relative`}
                   title={isCollapsed ? item.label : undefined}
                 >
                   <Icon className={`h-5 w-5 flex-shrink-0 transition-all duration-200 ${
                     isActive 
-                      ? 'text-white scale-110' 
-                      : 'text-orange-200 group-hover:text-white group-hover:scale-105'
+                      ? 'text-orange-400 scale-110' 
+                      : 'text-orange-200 group-hover:text-orange-400 group-hover:scale-105'
                   }`} />
                   {!isCollapsed && (
                     <span className="text-sm font-medium">{item.label}</span>
@@ -331,7 +331,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   
                   {/* Tooltip for collapsed state */}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-orange-400 text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
                       {item.label}
                     </div>
                   )}
@@ -360,11 +360,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         {isCollapsed && (
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <button 
-              className="w-full flex items-center justify-center p-3 text-orange-600 hover:bg-white hover:bg-opacity-10 hover:text-white rounded-lg transition-all duration-200 group relative"
+              className="w-full flex items-center justify-center p-3 text-orange-600 hover:bg-white hover:bg-opacity-10 hover:text-orange-400 rounded-lg transition-all duration-200 group relative"
               title="Get Support"
             >
-              <HelpCircle className="h-5 w-5 text-orange-200 group-hover:text-white group-hover:scale-105 transition-all duration-200" />
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+              <HelpCircle className="h-5 w-5 text-orange-200 group-hover:text-orange-400 group-hover:scale-105 transition-all duration-200" />
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-orange-400 text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
                 Get Support
               </div>
             </button>

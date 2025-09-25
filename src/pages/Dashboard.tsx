@@ -38,8 +38,28 @@ const Dashboard = () => {
   };
 
   const handleExport = () => {
-    // Implementation for data export
-    console.log('Exporting data...');
+    // Generate CSV data from current dashboard state
+    const csvData = [
+      ['Metric', 'Value', 'Change'],
+      ...kpis.map(kpi => [kpi.title, kpi.value, kpi.change]),
+      [''],
+      ['Campaign', 'Status', 'Performance'],
+      ...campaigns.map(campaign => [campaign.name, campaign.status, campaign.performance])
+    ];
+
+    // Convert to CSV string
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `dashboard-export-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleToggleStatus = (campaignId: string) => {
