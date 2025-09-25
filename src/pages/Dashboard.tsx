@@ -1,41 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import type { RootState } from '../store';
-import { loadDashboardData, updateFilters, toggleCampaignStatus } from '../store/dashboardSlice';
+import { loadDashboardData } from '../store/dashboardSlice';
 import Header from '../components/Header';
-import KPICards from '../components/KPICards';
-import FilterPanel from '../components/FilterPanel';
-import ChartsSection from '../components/ChartsSection';
-import CampaignTable from '../components/CampaignTable';
-import AdditionalWidgets from '../components/AdditionalWidgets';
 import Sidebar from '../layouts/Sidebar';
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState('Overview');
   const dispatch = useDispatch();
-  const { kpis, campaigns, chartData, geographicData, filters, loading, error } = useSelector((state: RootState) => state.dashboard);
+  const { loading, error } = useSelector((state: RootState) => state.dashboard);
 
   useEffect(() => {
     dispatch(loadDashboardData() as any);
   }, [dispatch]);
 
-  const handleFiltersChange = (newFilters: any) => {
-    dispatch(updateFilters(newFilters));
-  };
-
   const handleRefresh = () => {
     dispatch(loadDashboardData() as any);
-  };
-
-  const handleExport = () => {
-    // Implementation for data export
-    console.log('Exporting data...');
-  };
-
-  const handleToggleStatus = (campaignId: string) => {
-    dispatch(toggleCampaignStatus(campaignId));
   };
 
   const handleMenuItemClick = (item: string) => {
@@ -44,17 +27,17 @@ const Dashboard = () => {
     console.log(`Navigated to: ${item}`);
   };
 
-  const handleSearchSelect = (type: string, item: any) => {
+  const handleSearchSelect = (type: string, item: unknown) => {
     console.log(`Search selected: ${type}`, item);
     // Handle different search result types
     switch (type) {
       case 'campaign':
         // Could navigate to campaign details or filter campaigns
-        console.log(`Selected campaign: ${item.name}`);
+        console.log(`Selected campaign:`, item);
         break;
       case 'metric':
         // Could highlight the metric or show details
-        console.log(`Selected metric: ${item.title}`);
+        console.log(`Selected metric:`, item);
         break;
       case 'keyword':
         // Could navigate to keywords section
@@ -99,6 +82,8 @@ const Dashboard = () => {
           activeItem={activeMenuItem}
           onItemClick={handleMenuItemClick}
           onSearchSelect={handleSearchSelect}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />

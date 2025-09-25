@@ -16,6 +16,8 @@ import {
   X,
   ArrowRight,
   Hash,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,6 +26,8 @@ interface SidebarProps {
   activeItem?: string;
   onItemClick?: (item: string) => void;
   onSearchSelect?: (type: string, item: any) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 interface SearchResult {
@@ -34,7 +38,15 @@ interface SearchResult {
   data?: any;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeItem = 'Overview', onItemClick, onSearchSelect }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  isOpen, 
+  onClose, 
+  activeItem = 'Overview', 
+  onItemClick, 
+  onSearchSelect,
+  isCollapsed = false,
+  onToggleCollapse
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   
@@ -167,41 +179,65 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeItem = 'Overvi
 
       {/* Sidebar */}
       <motion.div
-        initial={{ x: -250 }}
-        animate={{ x: 0 }}
+        initial={{ x: isCollapsed ? -200 : -250 }}
+        animate={{ 
+          x: 0,
+          width: isCollapsed ? 80 : 256
+        }}
         transition={{ type: 'tween', duration: 0.3 }}
-        className={`fixed left-0 top-0 z-30 w-64 h-full bg-orange-500 text-white shadow-lg lg:relative lg:translate-x-0 lg:shadow-none lg:block ${isOpen ? 'block' : 'hidden lg:block'}`}
+        className={`fixed left-0 top-0 z-30 h-full bg-orange-500 text-white shadow-lg lg:relative lg:translate-x-0 lg:shadow-none lg:block ${
+          isOpen ? 'block' : 'hidden lg:block'
+        } ${isCollapsed ? 'w-20' : 'w-64'}`}
       >
-        <div className="p-6">
+        <div className={`p-6 ${isCollapsed ? 'px-4' : ''}`}>
           {/* Logo */}
-          <div className="flex items-center mb-6">
+          <div className={`flex items-center mb-6 ${isCollapsed ? 'justify-center' : ''}`}>
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
               <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
             </div>
-            <span className="text-lg font-semibold">Apple Search Ads</span>
+            {!isCollapsed && (
+              <span className="text-lg font-semibold">Apple Search Ads</span>
+            )}
           </div>
 
-          {/* Search */}
-          <div className="relative mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-200" />
-              <input
-                type="text"
-                placeholder="Search dashboard..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                className="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg pl-10 pr-10 py-2.5 text-white placeholder-orange-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-30 focus:border-transparent transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={clearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-200 hover:text-white transition-colors"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+          {/* Collapse Toggle Button */}
+          {onToggleCollapse && (
+            <button
+              onClick={onToggleCollapse}
+              className={`hidden lg:flex items-center justify-center w-8 h-8 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 hover:scale-105 transition-all duration-200 mb-6 group ${
+                isCollapsed ? 'mx-auto' : 'ml-auto'
+              }`}
+            >
+              {isCollapsed ? (
+                <ChevronRight className="h-4 w-4 text-orange-600 group-hover:text-orange-600 transition-colors duration-200" />
+              ) : (
+                <ChevronLeft className="h-4 w-4 text-orange-600 group-hover:text-orange-600 transition-colors duration-200" />
               )}
-            </div>
+            </button>
+          )}
+
+          {/* Search */}
+          {!isCollapsed && (
+            <div className="relative mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-200" />
+                <input
+                  type="text"
+                  placeholder="Search dashboard..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  className="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg pl-10 pr-10 py-2.5 text-white placeholder-orange-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-30 focus:border-transparent transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={clearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-200 hover:text-white transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             
             {/* Search Results */}
             <AnimatePresence>
@@ -260,12 +296,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeItem = 'Overvi
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+            </div>
+          )}
 
           {/* Navigation */}
           <nav className="space-y-1">
-            {!searchQuery && menuItems.map((item, index) => {
+            {(!searchQuery || isCollapsed) && menuItems.map((item, index) => {
               const Icon = item.icon;
+              const isActive = activeItem === item.label;
               return (
                 <motion.button
                   key={item.label}
@@ -273,14 +311,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeItem = 'Overvi
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                    activeItem === item.label 
+                  className={`w-full flex items-center ${
+                    isCollapsed ? 'justify-center px-2 py-3' : 'space-x-3 px-4 py-3'
+                  } rounded-lg transition-all duration-200 ${
+                    isActive 
                       ? 'bg-white bg-opacity-20 text-white' 
-                      : 'text-orange-100 hover:bg-white hover:bg-opacity-10 hover:text-white'
-                  }`}
+                      : 'text-orange-600 hover:bg-white hover:bg-opacity-10 hover:text-white'
+                  } group relative`}
+                  title={isCollapsed ? item.label : undefined}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-sm font-medium">{item.label}</span>
+                  <Icon className={`h-5 w-5 flex-shrink-0 transition-all duration-200 ${
+                    isActive 
+                      ? 'text-white scale-110' 
+                      : 'text-orange-200 group-hover:text-white group-hover:scale-105'
+                  }`} />
+                  {!isCollapsed && (
+                    <span className="text-sm font-medium">{item.label}</span>
+                  )}
+                  
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                      {item.label}
+                    </div>
+                  )}
                 </motion.button>
               );
             })}
@@ -288,17 +342,34 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeItem = 'Overvi
         </div>
 
         {/* Bottom Section */}
-        <div className="absolute bottom-0 left-0 right-0 p-6">
-          <div className="bg-white bg-opacity-10 rounded-lg p-4">
-            <div className="text-sm font-medium mb-1">Need help?</div>
-            <div className="text-xs text-orange-100 mb-3">
-              Check our documentation and support resources
+        {!isCollapsed && (
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <div className="bg-white bg-opacity-10 rounded-lg p-4">
+              <div className="text-sm font-medium mb-1">Need help?</div>
+              <div className="text-xs text-orange-600 mb-3">
+                Check our documentation and support resources
+              </div>
+              <button className="w-full bg-white text-orange-500 px-3 py-2 rounded-md text-sm font-medium hover:bg-opacity-90 transition-colors">
+                Get Support
+              </button>
             </div>
-            <button className="w-full bg-white text-orange-500 px-3 py-2 rounded-md text-sm font-medium hover:bg-opacity-90 transition-colors">
-              Get Support
+          </div>
+        )}
+        
+        {/* Collapsed Bottom Section - Help Icon */}
+        {isCollapsed && (
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <button 
+              className="w-full flex items-center justify-center p-3 text-orange-600 hover:bg-white hover:bg-opacity-10 hover:text-white rounded-lg transition-all duration-200 group relative"
+              title="Get Support"
+            >
+              <HelpCircle className="h-5 w-5 text-orange-200 group-hover:text-white group-hover:scale-105 transition-all duration-200" />
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                Get Support
+              </div>
             </button>
           </div>
-        </div>
+        )}
       </motion.div>
     </>
   );
